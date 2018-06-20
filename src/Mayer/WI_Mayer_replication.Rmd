@@ -1,0 +1,59 @@
+---
+title: "WI_Mayer_replication"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Sorry if the code is messy, I'm still trying to figure R out!
+
+## Load the ForR.csv file
+```{r}
+wi_data <- read.csv(file.choose())
+print(wi_data)
+
+```
+
+## Drop uncontested races
+```{r}
+wi_data <- wi_data[!(wi_data$contested_1=="0"),]
+print(wi_data)
+
+```
+
+## Plot presidential vs. state assembly vote counts by dems, reps, and total. Pretty similar to Mayer's!
+```{r}
+
+plot(wi_data$WSADEM12~wi_data$PREDEM12)
+abline(lm(wi_data$WSADEM12~wi_data$PREDEM12), col="red")
+
+plot(wi_data$WSAREP12~wi_data$PREREP12)
+abline(lm(wi_data$WSAREP12~wi_data$PREREP12), col="red")
+
+WSA12 = wi_data$WSADEM12+wi_data$WSAREP12
+PRE12 = wi_data$PREDEM12+wi_data$PREREP12
+plot(WSA12~PRE12)
+abline(lm(WSA12~PRE12), col="red")
+
+```
+
+## Mayer model for dems. I wasn't able to figure out how to specifically omit the Dunn county instrumental variable
+```{r}
+dmodel <- lm(wi_data$WSADEM12~wi_data$total_vep+wi_data$black_vep+wi_data$hisp_vep+wi_data$PREDEM12+wi_data$PREREP12+wi_data$dem_incum+wi_data$rep_incum+wi_data$county)
+print(dmodel)
+summary(dmodel)
+
+```
+
+## Mayer model for reps
+```{r}
+rmodel <- lm(wi_data$WSAREP12~wi_data$total_vep+wi_data$black_vep+wi_data$hisp_vep+wi_data$PREDEM12+wi_data$PREREP12+wi_data$dem_incum+wi_data$rep_incum+wi_data$county)
+print(rmodel)
+summary(rmodel)
+
+```
+
